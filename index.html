@@ -124,6 +124,12 @@
       max-height: 90vh;
       max-width: 100%;
     }
+
+    @media (max-width: 800px) {
+      body { flex-direction: column; padding: 12px; }
+      .panel.left, .panel.right { width: 100%; }
+      .panel.right { margin-top: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -155,7 +161,7 @@
 
     <div class="field">
       <label for="body">Isi (Plus Jakarta Sans)</label>
-      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong.&#10;Gunakan [[highlight]] untuk menandai teks penting."></textarea></textarea>
+      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong.&#10;Gunakan [[highlight]] untuk menandai teks penting."></textarea>
     </div>
 
     <div class="btn-row">
@@ -630,7 +636,10 @@ function recomputeTargetDuration() {
     pageDurations.push(d);
   }
   const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration;
-  const contentDur = pageDurations.reduce((a,b) => a + b, 0) + 1 + PAGE_GAP * (bodyPages.length - 1);
+  
+  // FIX 1: Dihapus "+ 1" dari akhir perhitungan durasi konten (agar tidak ada jeda statis 1 detik ekstra)
+  const contentDur = pageDurations.reduce((a,b) => a + b, 0) + PAGE_GAP * (bodyPages.length - 1);
+  
   targetDuration = titleTotal + 1 + contentDur;
 }
 
@@ -726,7 +735,9 @@ function startRender(format) {
   setStatus(`Recording ${format.toUpperCase()}...`);
   requestAnimationFrame(animate);
   setTimeout(() => { try { mediaRecorder.start(); } catch(e) { alert("Gagal start"); } }, 120);
-  setTimeout(() => { if (recording) mediaRecorder.stop(); }, targetDuration * 1000 + 500);
+  
+  // FIX 2: Dihapus "+ 500" agar MediaRecorder berhenti berbarengan pas dengan selesainya targetDuration
+  setTimeout(() => { if (recording) mediaRecorder.stop(); }, targetDuration * 1000);
 }
 
 renderBtn.addEventListener("click", () => startRender('webm'));
