@@ -191,7 +191,9 @@ const ctx = canvas.getContext('2d');
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
-const SCALE = isMobile ? 0.5 : 0.7;
+
+// PERUBAHAN: Set SCALE menjadi 1 secara permanen untuk hasil render FHD 1080x1920
+const SCALE = 1; 
 
 canvas.width = LOGICAL_WIDTH * SCALE;
 canvas.height = LOGICAL_HEIGHT * SCALE;
@@ -693,7 +695,8 @@ function pickBestRecorder(stream, format) {
   for (const mime of candidates) {
     if (mime && !MediaRecorder.isTypeSupported(mime)) continue;
     try {
-      const opts = mime ? { mimeType: mime } : {};
+      // PERUBAHAN: Menambahkan bitrate (videoBitsPerSecond: 8000000) untuk kualitas FHD yang jernih
+      const opts = mime ? { mimeType: mime, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 };
       const test = new MediaRecorder(stream, opts);
       test.start(30); test.stop();
       return { recorder: new MediaRecorder(stream, opts), mime };
