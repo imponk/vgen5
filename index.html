@@ -192,7 +192,6 @@ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
 
-// PERUBAHAN: Set SCALE menjadi 1 secara permanen untuk hasil render FHD 1080x1920
 const SCALE = 1; 
 
 canvas.width = LOGICAL_WIDTH * SCALE;
@@ -335,9 +334,6 @@ function tokenizeHighlighted(text) {
 }
 
 /* ============================================================ */
-/* ============================================================
-   HIGHLIGHT ISI - DARI SOURCE
-   ============================================================ */
 function drawLineFromTokens(tokens, x, y, normalColor, highlightBg, progress) {
   if (progress <= 0) {
     ctx.fillStyle = normalColor;
@@ -418,31 +414,26 @@ function drawBaseBackground() {
   ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 }
 
-/* ============================================================
-   ESTIMASI BARIS - DARI SOURCE
-   ============================================================ */
+/* ============================================================ */
 function estimateLinesForParagraph(text, maxWidth) {
   ctx.font = FONT_BODY;
-
   const tokens = tokenizeHighlighted(text);
-  let lines = 0;
-  let curTokens = [];
-  let curText = '';
-
-  for (const tok of tokens) {
-    const test = curText + tok.text;
-    if (curText && ctx.measureText(test).width > maxWidth) {
+  let lines = 0, curText = '';
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    const tokWidth = ctx.measureText(tok.text).width;
+    if (tokWidth > maxWidth) {
+      if (curText) lines++;
       lines++;
-      curTokens = [tok];
-      curText = tok.text;
-    } else {
-      curTokens.push(tok);
-      curText = test;
+      curText = '';
+      continue;
     }
+    const prefix = curText ? ' ' : '';
+    const test = curText + prefix + tok.text;
+    if (curText && ctx.measureText(test).width > maxWidth) { lines++; curText = tok.text; }
+    else { curText = test; }
   }
-  if (curTokens.length) lines++;
-  if (lines === 0) lines = 1;
-  return lines;
+  return Math.max(lines + (curText ? 1 : 0), 1);
 }
 
 /* ============================================================ */
@@ -515,36 +506,48 @@ function drawTitleScene(t) {
   ctx.fillRect(clipWidth, 0, LOGICAL_WIDTH - clipWidth, LOGICAL_HEIGHT);
 }
 
-/* ============================================================ */
-function estimateLinesForParagraph(text, maxWidth) {
-  ctx.font = FONT_BODY;
-  const tokens = tokenizeHighlighted(text);
-  let lines = 0, curText = '';
-  for (let i = 0; i < tokens.length; i++) {
-    const tok = tokens[i];
-    const tokWidth = ctx.measureText(tok.text).width;
-    if (tokWidth > maxWidth) {
-      if (curText) lines++;
-      lines++;
-      curText = '';
-      continue;
-    }
-    const prefix = curText ? ' ' : '';
-    const test = curText + prefix + tok.text;
-    if (curText && ctx.measureText(test).width > maxWidth) { lines++; curText = tok.text; }
-    else { curText = test; }
-  }
-  return Math.max(lines + (curText ? 1 : 0), 1);
-}
-
-/* ============================================================ */
+/* ============================================================
+   REBUILD BODY PAGES - PERUBAHAN HIGHLIGHT BERSAMBUNG
+   ============================================================ */
 function rebuildBodyPages() {
   const raw = bodyEl.value.split("\n");
   bodyPages = [];
   let cur = [];
+  let inHighlight = false; // Menyimpan status highlight antar baris & halaman
+
   for (const line of raw) {
-    if (!line.trim()) { if (cur.length > 0) { bodyPages.push(cur.slice()); cur = []; } }
-    else { cur.push(line.trimEnd()); }
+    if (!line.trim()) {
+      // Jika baris kosong (pindah halaman), masukkan cur ke bodyPages
+      if (cur.length > 0) { 
+        bodyPages.push(cur.slice()); 
+        cur = []; 
+      }
+    } else {
+      let trimmedLine = line.trimEnd();
+
+      // Jika masih dalam status highlight dari baris sebelumnya, 
+      // otomatis tambahkan kode '[[' di depan teks baris ini
+      if (inHighlight && !trimmedLine.startsWith('[[')) {
+        trimmedLine = '[[' + trimmedLine;
+      }
+
+      // Evaluasi ulang status highlight khusus untuk mendeteksi kapan ']]' muncul
+      let hiState = false;
+      for (let i = 0; i < trimmedLine.length; i++) {
+        if (!hiState && trimmedLine.startsWith('[[', i)) {
+          hiState = true;
+          i++; 
+        } else if (hiState && trimmedLine.startsWith(']]', i)) {
+          hiState = false;
+          i++;
+        }
+      }
+      
+      // Update status global untuk baris selanjutnya
+      inHighlight = hiState; 
+
+      cur.push(trimmedLine);
+    }
   }
   if (cur.length > 0) bodyPages.push(cur);
   if (bodyPages.length === 0) bodyPages = [[]];
@@ -639,9 +642,7 @@ function recomputeTargetDuration() {
   }
   const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration;
   
-  // FIX 1: Dihapus "+ 1" dari akhir perhitungan durasi konten (agar tidak ada jeda statis 1 detik ekstra)
   const contentDur = pageDurations.reduce((a,b) => a + b, 0) + PAGE_GAP * (bodyPages.length - 1);
-  
   targetDuration = titleTotal + 1 + contentDur;
 }
 
@@ -695,7 +696,6 @@ function pickBestRecorder(stream, format) {
   for (const mime of candidates) {
     if (mime && !MediaRecorder.isTypeSupported(mime)) continue;
     try {
-      // PERUBAHAN: Menambahkan bitrate (videoBitsPerSecond: 8000000) untuk kualitas FHD yang jernih
       const opts = mime ? { mimeType: mime, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 };
       const test = new MediaRecorder(stream, opts);
       test.start(30); test.stop();
@@ -739,7 +739,6 @@ function startRender(format) {
   requestAnimationFrame(animate);
   setTimeout(() => { try { mediaRecorder.start(); } catch(e) { alert("Gagal start"); } }, 120);
   
-  // FIX 2: Dihapus "+ 500" agar MediaRecorder berhenti berbarengan pas dengan selesainya targetDuration
   setTimeout(() => { if (recording) mediaRecorder.stop(); }, targetDuration * 1000);
 }
 
