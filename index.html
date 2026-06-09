@@ -217,7 +217,8 @@ let pageDurations = [];
 const FONT_UPPER = "400 34px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "400 64px 'LeagueGothic', sans-serif";
+// Ukuran font isi diperbesar menjadi 72px
+const FONT_BODY = "400 72px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -304,7 +305,6 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   let totalHeight = 0;
-  // Perhitungan total tinggi disesuaikan dengan gap baru yang lebih rapat
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 34 + 60;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
@@ -317,7 +317,7 @@ function rebuildTitleTexture() {
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
     for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 34; }
-    y += 60; // Jarak dikurangi agar lebih rapat ke judul
+    y += 60; 
   }
   
   if (titleLayout.titleLines.length > 0) {
@@ -329,13 +329,13 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 100; // Leading judul dikurangi dari 120 menjadi 100
+      y += 100; 
     }
     y -= 20;
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y += 30; // Jarak dari judul ke subjudul dikurangi agar lebih rapat
+    y += 30; 
     titleCtx.font = FONT_SUBTITLE;
     for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 34; }
   }
@@ -413,8 +413,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Gap (leading) disesuaikan lebih kecil (rapat) menjadi 68
-  const gap = 68;
+  // Gap (leading) disesuaikan menjadi 76 karena font size naik menjadi 72px
+  const gap = 76;
   const contentHeight = totalUnits * gap;
 
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
