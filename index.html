@@ -214,11 +214,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Perubahan ukuran font Judul dan Isi
+// Perubahan ukuran font Judul dan Isi diperbesar
 const FONT_UPPER = "400 34px 'LeagueGothic', sans-serif";
-const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
+const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "400 56px 'LeagueGothic', sans-serif";
+const FONT_BODY = "400 64px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -278,7 +278,6 @@ let titleLayout = { marginLeft: 200, marginRight: 200, textWidth: 0, upperLines:
 let titleCanvas = null, titleCtx = null, titleTextureReady = false;
 
 function rebuildTitleLayout() {
-  // Margin dikurangi sedikit menjadi 200px
   const marginLeft = 200, marginRight = 200;
   const textWidth = LOGICAL_WIDTH - marginLeft - marginRight;
   const titleScale = parseFloat(titleScaleSelect.value);
@@ -307,8 +306,8 @@ function rebuildTitleTexture() {
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 36 + 70;
-  // Menyesuaikan tinggi baris karena ukuran font judul lebih besar (96px)
-  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 105;
+  // Menyesuaikan tinggi baris karena ukuran font judul lebih besar (112px)
+  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 120;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 36 + 20;
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
@@ -331,7 +330,7 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 105; // Jarak antar baris judul diperbesar karena ukuran font 96px
+      y += 120; // Jarak antar baris judul diperbesar karena ukuran font 112px
     }
     y -= 20;
   }
@@ -386,7 +385,6 @@ function drawBodyPage(pageIndex, t) {
   const lines = bodyPages[pageIndex] || [];
   const W = LOGICAL_WIDTH;
   
-  // Margin dikurangi sedikit menjadi 200px
   const marginLeft = 200;
   const marginRight = 200;
   const maxWidth = W - marginLeft - marginRight;
@@ -416,8 +414,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Gap disesuaikan lebih besar menjadi 76 karena ukuran font 56px
-  const gap = 76;
+  // Gap disesuaikan lebih besar menjadi 84 karena ukuran font 64px
+  const gap = 84;
   const contentHeight = totalUnits * gap;
 
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
