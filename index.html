@@ -214,10 +214,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
+// Perubahan ukuran font Judul dan Isi
 const FONT_UPPER = "400 34px 'LeagueGothic', sans-serif";
-const FONT_TITLE = "400 81px 'LeagueGothic', sans-serif";
+const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "400 48px 'LeagueGothic', sans-serif";
+const FONT_BODY = "400 56px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -273,12 +274,12 @@ function estimateLinesForParagraph(text, maxWidth) {
 }
 
 /* ============================================================ */
-let titleLayout = { marginLeft: 240, marginRight: 240, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
+let titleLayout = { marginLeft: 200, marginRight: 200, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
 let titleCanvas = null, titleCtx = null, titleTextureReady = false;
 
 function rebuildTitleLayout() {
-  // Margin diperlebar menjadi 240px kiri dan kanan
-  const marginLeft = 240, marginRight = 240;
+  // Margin dikurangi sedikit menjadi 200px
+  const marginLeft = 200, marginRight = 200;
   const textWidth = LOGICAL_WIDTH - marginLeft - marginRight;
   const titleScale = parseFloat(titleScaleSelect.value);
   const titleTextWidth = textWidth / titleScale;
@@ -306,10 +307,10 @@ function rebuildTitleTexture() {
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 36 + 70;
-  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 90;
+  // Menyesuaikan tinggi baris karena ukuran font judul lebih besar (96px)
+  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 105;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 36 + 20;
 
-  // Jarak vertikal dipertahankan ke +250
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
   titleCtx.textAlign = 'center'; 
@@ -330,7 +331,7 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 90;
+      y += 105; // Jarak antar baris judul diperbesar karena ukuran font 96px
     }
     y -= 20;
   }
@@ -385,9 +386,9 @@ function drawBodyPage(pageIndex, t) {
   const lines = bodyPages[pageIndex] || [];
   const W = LOGICAL_WIDTH;
   
-  // Margin diperlebar menjadi 240px kiri dan kanan
-  const marginLeft = 240;
-  const marginRight = 240;
+  // Margin dikurangi sedikit menjadi 200px
+  const marginLeft = 200;
+  const marginRight = 200;
   const maxWidth = W - marginLeft - marginRight;
 
   let alpha = 1;
@@ -415,10 +416,10 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  const gap = 64;
+  // Gap disesuaikan lebih besar menjadi 76 karena ukuran font 56px
+  const gap = 76;
   const contentHeight = totalUnits * gap;
 
-  // Jarak vertikal dipertahankan ke +250
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
 
   for (const raw of lines) {
@@ -444,8 +445,8 @@ function recomputeTargetDuration() {
   ctx.font = FONT_BODY;
   for (const page of bodyPages) {
     const words = page.join(' ').split(/\s+/).length || 1;
-    // Maksimal lebar teks menyesuaikan dengan margin baru (1080 - 240 - 240 = 600)
-    const maxWidth = LOGICAL_WIDTH - 480; 
+    // Maksimal lebar teks (1080 - 200 - 200 = 680)
+    const maxWidth = LOGICAL_WIDTH - 400; 
     let totalUnits = 0;
     for (const raw of page) if (raw.trim()) totalUnits += estimateLinesForParagraph(raw, maxWidth);
     const readingSeconds = words / READING_WORDS_PER_SEC;
