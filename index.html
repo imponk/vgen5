@@ -214,7 +214,6 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Penyesuaian ukuran font Upper dibesarkan, Isi dikecilkan sedikit
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
@@ -306,11 +305,11 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   let totalHeight = 0;
-  // Tinggi Upper disesuaikan menjadi 42px
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
+  // Posisi halaman judul dipertahankan (+250)
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
   titleCtx.textAlign = 'center'; 
@@ -319,7 +318,7 @@ function rebuildTitleTexture() {
 
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 42; } // Baris baru disesuaikan ke 42px
+    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 42; }
     y += 60; 
   }
   
@@ -417,11 +416,11 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Gap (leading) disesuaikan menjadi 72 agar pas dengan font 68px
   const gap = 72;
   const contentHeight = totalUnits * gap;
 
-  let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
+  // KHUSUS HALAMAN ISI: Diturunkan sedikit dari posisi tengah (+330)
+  let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 330;
 
   for (const raw of lines) {
     if (!raw.trim()) {
