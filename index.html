@@ -273,11 +273,12 @@ function estimateLinesForParagraph(text, maxWidth) {
 }
 
 /* ============================================================ */
-let titleLayout = { marginLeft: 180, marginRight: 180, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
+let titleLayout = { marginLeft: 240, marginRight: 240, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
 let titleCanvas = null, titleCtx = null, titleTextureReady = false;
 
 function rebuildTitleLayout() {
-  const marginLeft = 180, marginRight = 180;
+  // Margin diperlebar menjadi 240px kiri dan kanan
+  const marginLeft = 240, marginRight = 240;
   const textWidth = LOGICAL_WIDTH - marginLeft - marginRight;
   const titleScale = parseFloat(titleScaleSelect.value);
   const titleTextWidth = textWidth / titleScale;
@@ -308,7 +309,7 @@ function rebuildTitleTexture() {
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 90;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 36 + 20;
 
-  // Diturunkan menjadi +250 agar posisinya lebih ke bawah
+  // Jarak vertikal dipertahankan ke +250
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
   titleCtx.textAlign = 'center'; 
@@ -384,8 +385,9 @@ function drawBodyPage(pageIndex, t) {
   const lines = bodyPages[pageIndex] || [];
   const W = LOGICAL_WIDTH;
   
-  const marginLeft = 180;
-  const marginRight = 180;
+  // Margin diperlebar menjadi 240px kiri dan kanan
+  const marginLeft = 240;
+  const marginRight = 240;
   const maxWidth = W - marginLeft - marginRight;
 
   let alpha = 1;
@@ -416,7 +418,7 @@ function drawBodyPage(pageIndex, t) {
   const gap = 64;
   const contentHeight = totalUnits * gap;
 
-  // Diturunkan menjadi +250 agar posisinya lebih ke bawah menyesuaikan judul
+  // Jarak vertikal dipertahankan ke +250
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
 
   for (const raw of lines) {
@@ -442,7 +444,8 @@ function recomputeTargetDuration() {
   ctx.font = FONT_BODY;
   for (const page of bodyPages) {
     const words = page.join(' ').split(/\s+/).length || 1;
-    const maxWidth = LOGICAL_WIDTH - 360; 
+    // Maksimal lebar teks menyesuaikan dengan margin baru (1080 - 240 - 240 = 600)
+    const maxWidth = LOGICAL_WIDTH - 480; 
     let totalUnits = 0;
     for (const raw of page) if (raw.trim()) totalUnits += estimateLinesForParagraph(raw, maxWidth);
     const readingSeconds = words / READING_WORDS_PER_SEC;
