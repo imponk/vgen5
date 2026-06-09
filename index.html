@@ -214,11 +214,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-const FONT_UPPER = "400 34px 'LeagueGothic', sans-serif";
+// Penyesuaian ukuran font Upper dibesarkan, Isi dikecilkan sedikit
+const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-// Ukuran font isi dikurangi 2px menjadi 70px
-const FONT_BODY = "400 70px 'LeagueGothic', sans-serif";
+const FONT_BODY = "400 68px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -270,7 +270,6 @@ function drawBaseBackground() {
 /* ============================================================ */
 function estimateLinesForParagraph(text, maxWidth) {
   ctx.font = FONT_BODY;
-  // Pastikan saat estimasi baris, letter spacing juga diaktifkan
   ctx.letterSpacing = "2px";
   return wrapText(text, maxWidth).length;
 }
@@ -307,20 +306,20 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   let totalHeight = 0;
-  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 34 + 60;
+  // Tinggi Upper disesuaikan menjadi 42px
+  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
   titleCtx.textAlign = 'center'; 
-  // Pastikan judul dan upper tidak menggunakan letter spacing ekstra
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
 
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 34; }
+    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 42; } // Baris baru disesuaikan ke 42px
     y += 60; 
   }
   
@@ -406,7 +405,6 @@ function drawBodyPage(pageIndex, t) {
 
   ctx.textAlign = 'left';
   ctx.font = FONT_BODY;
-  // Tambahkan letter spacing khusus untuk body text (Isi)
   ctx.letterSpacing = "2px";
   ctx.fillStyle = "#ffffff";
 
@@ -419,8 +417,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Gap (leading) disesuaikan menjadi 74 karena font turun 2px
-  const gap = 74;
+  // Gap (leading) disesuaikan menjadi 72 agar pas dengan font 68px
+  const gap = 72;
   const contentHeight = totalUnits * gap;
 
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 250;
@@ -446,7 +444,7 @@ function recomputeTargetDuration() {
   rebuildBodyPages();
   pageDurations = [];
   ctx.font = FONT_BODY;
-  ctx.letterSpacing = "2px"; // Terapkan spacing untuk penghitungan juga
+  ctx.letterSpacing = "2px"; 
   
   for (const page of bodyPages) {
     const words = page.join(' ').split(/\s+/).length || 1;
@@ -463,7 +461,7 @@ function recomputeTargetDuration() {
   const contentDur = pageDurations.reduce((a,b) => a + b, 0) + PAGE_GAP * (bodyPages.length - 1);
   targetDuration = titleTotal + 1 + contentDur;
   
-  ctx.letterSpacing = "0px"; // Kembalikan ke default agar tidak bocor
+  ctx.letterSpacing = "0px"; 
 }
 
 /* ============================================================ */
