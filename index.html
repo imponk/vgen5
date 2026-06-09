@@ -273,11 +273,12 @@ function estimateLinesForParagraph(text, maxWidth) {
 }
 
 /* ============================================================ */
-let titleLayout = { marginLeft: 110, marginRight: 110, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
+let titleLayout = { marginLeft: 180, marginRight: 180, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
 let titleCanvas = null, titleCtx = null, titleTextureReady = false;
 
 function rebuildTitleLayout() {
-  const marginLeft = 110, marginRight = 110;
+  // Margin diperlebar menjadi 180px kiri dan kanan
+  const marginLeft = 180, marginRight = 180;
   const textWidth = LOGICAL_WIDTH - marginLeft - marginRight;
   const titleScale = parseFloat(titleScaleSelect.value);
   const titleTextWidth = textWidth / titleScale;
@@ -303,16 +304,13 @@ function rebuildTitleTexture() {
   
   const centerX = LOGICAL_WIDTH / 2;
 
-  // 1. Hitung total tinggi untuk grup Judul
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 36 + 70;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 90;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 36 + 20;
 
-  // 2. Letakkan tepat di tengah layar secara dinamis, ditambah pergeseran ke bawah (+100px)
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 100;
   
-  // SEMUA (UPPER, JUDUL, SUBJUDUL) DI-SET CENTER
   titleCtx.textAlign = 'center'; 
   titleCtx.fillStyle = '#ffffff';
 
@@ -337,7 +335,7 @@ function rebuildTitleTexture() {
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y += 40; // Tambah sedikit jarak sebelum subjudul
+    y += 40; 
     titleCtx.font = FONT_SUBTITLE;
     for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 36; }
   }
@@ -386,9 +384,9 @@ function drawBodyPage(pageIndex, t) {
   const lines = bodyPages[pageIndex] || [];
   const W = LOGICAL_WIDTH;
   
-  // Margin simetris agar teks rata kiri tetap berada rapi di tengah layar
-  const marginLeft = 110;
-  const marginRight = 110;
+  // Margin diperlebar menjadi 180px kiri dan kanan
+  const marginLeft = 180;
+  const marginRight = 180;
   const maxWidth = W - marginLeft - marginRight;
 
   let alpha = 1;
@@ -403,16 +401,14 @@ function drawBodyPage(pageIndex, t) {
   ctx.rect(0, 0, marginLeft + maxWidth * wipe, LOGICAL_HEIGHT);
   ctx.clip();
 
-  // ISI TETAP RATA KIRI
   ctx.textAlign = 'left';
   ctx.font = FONT_BODY;
   ctx.fillStyle = "#ffffff";
 
-  // 1. Hitung total tinggi untuk grup Isi
   let totalUnits = 0;
   for (const raw of lines) {
     if (!raw.trim()) {
-      totalUnits += 0.6; // Ruang untuk baris kosong
+      totalUnits += 0.6; 
       continue;
     }
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
@@ -421,7 +417,6 @@ function drawBodyPage(pageIndex, t) {
   const gap = 64;
   const contentHeight = totalUnits * gap;
 
-  // 2. Letakkan tepat di tengah layar secara dinamis, ditambah pergeseran ke bawah (+100px)
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 100;
 
   for (const raw of lines) {
@@ -447,7 +442,8 @@ function recomputeTargetDuration() {
   ctx.font = FONT_BODY;
   for (const page of bodyPages) {
     const words = page.join(' ').split(/\s+/).length || 1;
-    const maxWidth = LOGICAL_WIDTH - 220; // 1080 - 110 - 110
+    // Maksimal lebar teks menyesuaikan dengan margin baru (1080 - 180 - 180 = 720)
+    const maxWidth = LOGICAL_WIDTH - 360; 
     let totalUnits = 0;
     for (const raw of page) if (raw.trim()) totalUnits += estimateLinesForParagraph(raw, maxWidth);
     const readingSeconds = words / READING_WORDS_PER_SEC;
