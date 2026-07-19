@@ -26,10 +26,16 @@
     body.light label { color: #374151; }
     body.light .theme-toggle { background: #ffffff; color: #1f2937; border-color: #d1d5db; }
 
+    /* Memuat kedua font: LeagueGothic untuk Judul, Oswald untuk Isi */
     @font-face {
       font-family: 'LeagueGothic';
       src: url('fonts/LeagueGothic-Regular.ttf') format('truetype');
       font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Oswald';
+      src: url('fonts/Oswald-VariableFont_wght.ttf') format('truetype');
+      font-weight: 200 700;
     }
 
     body {
@@ -39,7 +45,7 @@
       gap: 16px;
       background: radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
       color: #e5e7eb;
-      font-family: 'LeagueGothic', system-ui, sans-serif;
+      font-family: system-ui, sans-serif;
       min-height: 100vh;
     }
 
@@ -134,12 +140,12 @@
 
     <div class="field">
       <label for="upper">Upper (Kategori)</label>
-      <textarea id="upper" placeholder="Contoh: BERITA UTAMA"></textarea>
+      <textarea id="upper" placeholder="Contoh: BERITA UTAMA" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
     </div>
 
     <div class="field">
       <label for="title">Judul (League Gothic)</label>
-      <textarea id="title" placeholder="Judul utama"></textarea>
+      <textarea id="title" placeholder="Judul utama" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
       <select id="titleScale" style="margin-top: 4px; padding: 4px; background: #020617; color: #e5e7eb; border: 1px solid #334155; border-radius: 6px;">
         <option value="1">100%</option>
         <option value="0.9">90%</option>
@@ -150,12 +156,12 @@
 
     <div class="field">
       <label for="subtitle">Subjudul (League Gothic)</label>
-      <textarea id="subtitle" placeholder="Subjudul singkat"></textarea>
+      <textarea id="subtitle" placeholder="Subjudul singkat" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
     </div>
 
     <div class="field">
-      <label for="body">Isi (League Gothic)</label>
-      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong."></textarea>
+      <label for="body">Isi (Oswald)</label>
+      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong." style="font-family: 'Oswald', sans-serif;"></textarea>
     </div>
 
     <div class="btn-row">
@@ -214,11 +220,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
+// Kombinasi Font: Judul pakai LeagueGothic, Isi pakai Oswald
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-// Ukuran font isi diperkecil lagi menjadi 62px
-const FONT_BODY = "400 62px 'LeagueGothic', sans-serif";
+const FONT_BODY = "400 62px 'Oswald', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -228,10 +234,10 @@ let titleStaticDuration = TITLE_STATIC_MIN;
 
 const BODY_FADE_IN = 0.3;
 const BODY_WIPE = 0.4;
-// Dipercepat 20% dari 0.4 menjadi 0.32
+// Dipercepat 20%
 const BODY_LINE_DUR = 0.32;
 const PAGE_GAP = 0.6;
-// Dipercepat 20% dari 2.6 menjadi 3.12
+// Dipercepat 20%
 const READING_WORDS_PER_SEC = 3.12;
 
 function setStatus(t) { statusEl.textContent = 'Status: ' + t; }
@@ -312,7 +318,6 @@ function rebuildTitleTexture() {
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
-  // Posisi halaman judul dipertahankan (+250)
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
   titleCtx.textAlign = 'center'; 
@@ -419,11 +424,10 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Jarak antar baris diperkecil dari 72 menjadi 66 agar lebih rapat
+  // Jarak antar baris dipertahankan rapat di 66
   const gap = 66;
   const contentHeight = totalUnits * gap;
 
-  // KHUSUS HALAMAN ISI: Diturunkan sedikit dari posisi tengah (+330)
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 330;
 
   for (const raw of lines) {
@@ -456,7 +460,6 @@ function recomputeTargetDuration() {
     for (const raw of page) if (raw.trim()) totalUnits += estimateLinesForParagraph(raw, maxWidth);
     const readingSeconds = words / READING_WORDS_PER_SEC;
     const animMinimum = totalUnits * BODY_LINE_DUR + 0.5;
-    // Batas minimum durasi diubah dari 3 ke 2.5 untuk mengakomodasi kecepatan yang meningkat
     let d = Math.max(2.5, Math.min(12, Math.max(readingSeconds, animMinimum)));
     pageDurations.push(d);
   }
