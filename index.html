@@ -217,8 +217,8 @@ let pageDurations = [];
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-// Dikurangi 2px dari 68px menjadi 66px
-const FONT_BODY = "400 66px 'LeagueGothic', sans-serif";
+// Ukuran font isi diperkecil lagi menjadi 62px
+const FONT_BODY = "400 62px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -419,7 +419,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  const gap = 72;
+  // Jarak antar baris diperkecil dari 72 menjadi 66 agar lebih rapat
+  const gap = 66;
   const contentHeight = totalUnits * gap;
 
   // KHUSUS HALAMAN ISI: Diturunkan sedikit dari posisi tengah (+330)
