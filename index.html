@@ -217,7 +217,8 @@ let pageDurations = [];
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "400 68px 'LeagueGothic', sans-serif";
+// Mengubah font isi menjadi lebih kecil (50px)
+const FONT_BODY = "400 50px 'LeagueGothic', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -227,9 +228,11 @@ let titleStaticDuration = TITLE_STATIC_MIN;
 
 const BODY_FADE_IN = 0.3;
 const BODY_WIPE = 0.4;
-const BODY_LINE_DUR = 0.4;
+// Mempercepat durasi animasi per baris
+const BODY_LINE_DUR = 0.2;
 const PAGE_GAP = 0.6;
-const READING_WORDS_PER_SEC = 2.6;
+// Mengasumsikan kecepatan baca yang lebih cepat untuk durasi
+const READING_WORDS_PER_SEC = 4.5;
 
 function setStatus(t) { statusEl.textContent = 'Status: ' + t; }
 
@@ -452,7 +455,8 @@ function recomputeTargetDuration() {
     for (const raw of page) if (raw.trim()) totalUnits += estimateLinesForParagraph(raw, maxWidth);
     const readingSeconds = words / READING_WORDS_PER_SEC;
     const animMinimum = totalUnits * BODY_LINE_DUR + 0.5;
-    let d = Math.max(3, Math.min(12, Math.max(readingSeconds, animMinimum)));
+    // Mengurangi batas durasi minimal halaman dari 3 detik menjadi 1.5 detik
+    let d = Math.max(1.5, Math.min(12, Math.max(readingSeconds, animMinimum)));
     pageDurations.push(d);
   }
   const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration;
