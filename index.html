@@ -220,11 +220,10 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Kombinasi Font: Judul pakai LeagueGothic, Isi pakai Oswald
-const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
+// Ukuran Font disesuaikan: UPPER -> 48px, SUBTITLE -> 42px
+const FONT_UPPER = "400 48px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
-const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-// Diperkecil 20% dari 62px menjadi 50px
+const FONT_SUBTITLE = "400 42px 'LeagueGothic', sans-serif";
 const FONT_BODY = "400 50px 'Oswald', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
@@ -235,10 +234,8 @@ let titleStaticDuration = TITLE_STATIC_MIN;
 
 const BODY_FADE_IN = 0.3;
 const BODY_WIPE = 0.4;
-// Dipercepat 20%
 const BODY_LINE_DUR = 0.32;
 const PAGE_GAP = 0.6;
-// Dipercepat 20%
 const READING_WORDS_PER_SEC = 3.12;
 
 function setStatus(t) { statusEl.textContent = 'Status: ' + t; }
@@ -315,9 +312,10 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   let totalHeight = 0;
-  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
+  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 52 + 50;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
-  if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
+  // Jarak subjudul dikurangi dengan penyesuaian offset tinggi
+  if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 44 + 5;
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
@@ -327,8 +325,8 @@ function rebuildTitleTexture() {
 
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 42; }
-    y += 60; 
+    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 52; }
+    y += 50; 
   }
   
   if (titleLayout.titleLines.length > 0) {
@@ -342,13 +340,12 @@ function rebuildTitleTexture() {
       titleCtx.restore();
       y += 100; 
     }
-    y -= 20;
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y += 30; 
+    y += 15; // Jarak dikurangi agar tidak terlalu jauh dari Judul
     titleCtx.font = FONT_SUBTITLE;
-    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 34; }
+    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 44; }
   }
   
   titleTextureReady = true;
@@ -425,7 +422,6 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Jarak antar baris disesuaikan karena ukuran font mengecil (dari 66 menjadi 54)
   const gap = 54;
   const contentHeight = totalUnits * gap;
 
