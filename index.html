@@ -229,7 +229,7 @@ const FONT_BODY = "400 50px 'Oswald', sans-serif";
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
 
-// Diatur statis 3 detik dan fade out 1 detik
+// Durasi statis 3 detik dan fade out 1 detik
 const TITLE_STATIC_MIN = 3.0;
 const TITLE_STATIC_MAX = 3.0;
 const TITLE_FADE_OUT = 1.0;
@@ -300,7 +300,6 @@ function rebuildTitleLayout() {
   };
   const hasTitle = titleLayout.upperLines.length > 0 || titleLayout.titleLines.length > 0 || titleLayout.subtitleLines.length > 0;
   
-  // Menetapkan durasi statis persis 3 detik jika ada judul
   titleStaticDuration = hasTitle ? 3.0 : 0;
   rebuildTitleTexture();
 }
@@ -357,7 +356,6 @@ function drawTitleScene(t) {
   drawBaseBackground();
   if (!titleTextureReady || !titleCanvas) return;
 
-  // Fase 1: Wipe-in (0 sampai TITLE_PRE_HOLD + TITLE_WIPE)
   const wipeEnd = TITLE_PRE_HOLD + TITLE_WIPE;
   let alpha = 1;
 
@@ -374,7 +372,6 @@ function drawTitleScene(t) {
     return;
   }
 
-  // Fase 2: Fade Out di 1 detik terakhir durasi title (dari total title + fadeout)
   const totalTitleTime = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration;
   const fadeStart = totalTitleTime - TITLE_FADE_OUT;
 
@@ -484,7 +481,6 @@ function recomputeTargetDuration() {
     pageDurations.push(d);
   }
   
-  // Total durasi judul mencakup pre-hold, wipe, statis (3 detik), dan fade-out (1 detik)
   const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration + TITLE_FADE_OUT;
   
   const contentDur = pageDurations.reduce((a,b) => a + b, 0) + PAGE_GAP * (bodyPages.length - 1);
