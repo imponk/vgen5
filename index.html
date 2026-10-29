@@ -226,14 +226,9 @@ const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 42px 'LeagueGothic', sans-serif";
 const FONT_BODY = "400 50px 'Oswald', sans-serif";
 
-const TITLE_PRE_HOLD = 0.3;
-const TITLE_WIPE = 0.8;
-
-// Durasi statis 3 detik dan fade out 1 detik
-const TITLE_STATIC_MIN = 3.0;
-const TITLE_STATIC_MAX = 3.0;
+// Durasi statis judul 3 detik, fade out 1 detik (tanpa efek wipe/swap)
+const TITLE_STATIC_DURATION = 3.0;
 const TITLE_FADE_OUT = 1.0;
-let titleStaticDuration = TITLE_STATIC_MIN;
 
 const BODY_FADE_IN = 0.3;
 const BODY_WIPE = 0.4;
@@ -298,9 +293,6 @@ function rebuildTitleLayout() {
     titleLines: wrapText(titleEl.value.trim(), titleTextWidth, FONT_TITLE),
     subtitleLines: wrapText(subtitleEl.value.trim(), textWidth, FONT_SUBTITLE)
   };
-  const hasTitle = titleLayout.upperLines.length > 0 || titleLayout.titleLines.length > 0 || titleLayout.subtitleLines.length > 0;
-  
-  titleStaticDuration = hasTitle ? 3.0 : 0;
   rebuildTitleTexture();
 }
 
@@ -356,26 +348,12 @@ function drawTitleScene(t) {
   drawBaseBackground();
   if (!titleTextureReady || !titleCanvas) return;
 
-  const wipeEnd = TITLE_PRE_HOLD + TITLE_WIPE;
   let alpha = 1;
+  const fadeStart = TITLE_STATIC_DURATION;
+  const fadeEnd = TITLE_STATIC_DURATION + TITLE_FADE_OUT;
 
-  if (t <= wipeEnd) {
-    const p = t < TITLE_PRE_HOLD ? 1 : Math.pow((t - TITLE_PRE_HOLD) / TITLE_WIPE, 2) * (3 - 2 * (t - TITLE_PRE_HOLD) / TITLE_WIPE);
-    const clipWidth = titleLayout.marginLeft + titleLayout.textWidth * p;
-    
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, clipWidth, LOGICAL_HEIGHT);
-    ctx.clip();
-    ctx.drawImage(titleCanvas, 0, 0);
-    ctx.restore();
-    return;
-  }
-
-  const totalTitleTime = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration;
-  const fadeStart = totalTitleTime - TITLE_FADE_OUT;
-
-  if (t >= fadeStart && t <= totalTitleTime) {
+  // Jika masuk masa fade out (antara detik ke-3 sampai ke-4)
+  if (t >= fadeStart && t <= fadeEnd) {
     alpha = 1 - ((t - fadeStart) / TITLE_FADE_OUT);
   }
 
@@ -481,18 +459,19 @@ function recomputeTargetDuration() {
     pageDurations.push(d);
   }
   
-  const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration + TITLE_FADE_OUT;
+  const hasTitle = (titleLayout.upperLines.length > 0 || titleLayout.titleLines.length > 0 || titleLayout.subtitleLines.length > 0);
+  const titleTotal = hasTitle ? (TITLE_STATIC_DURATION + TITLE_FADE_OUT) : 0;
   
   const contentDur = pageDurations.reduce((a,b) => a + b, 0) + PAGE_GAP * (bodyPages.length - 1);
-  targetDuration = titleTotal + 1 + contentDur;
+  targetDuration = titleTotal + (hasTitle ? 1 : 0) + contentDur;
   
   ctx.letterSpacing = "0px"; 
 }
 
 /* ============================================================ */
 function drawFrame(globalT) {
-  const titleTotal = TITLE_PRE_HOLD + TITLE_WIPE + titleStaticDuration + TITLE_FADE_OUT;
-  const hasTitle = titleStaticDuration > 0;
+  const hasTitle = (titleLayout.upperLines.length > 0 || titleLayout.titleLines.length > 0 || titleLayout.subtitleLines.length > 0);
+  const titleTotal = hasTitle ? (TITLE_STATIC_DURATION + TITLE_FADE_OUT) : 0;
   const afterTitleGap = hasTitle ? titleTotal + 1 : 0;
   
   if (globalT <= titleTotal && hasTitle) { drawTitleScene(globalT); return; }
