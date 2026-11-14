@@ -304,9 +304,9 @@ function rebuildTitleTexture() {
   
   const centerX = LOGICAL_WIDTH / 2;
 
-  // Jarak / Spasi antar elemen judul disesuaikan agar lebih turun & proporsional
-  const spacingUpperToTitle = 42;  // Jarak dari Upper ke Judul Utama (ditambah sedikit agar tidak mepet)
-  const spacingTitleToSub = 38;    // Jarak dari Judul Utama ke Subjudul
+  // Jarak / Spasi diperbesar agar posisi judul lebih turun dari upper
+  const spacingUpperToTitle = 64;  // Dinaikkan dari 42 ke 64 agar lebih longgar & proporsional
+  const spacingTitleToSub = 42;    // Jarak dari Judul Utama ke Subjudul
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 48 + spacingUpperToTitle;
