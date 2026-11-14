@@ -244,21 +244,39 @@ function getTimestamp() {
 }
 
 /* ============================================================ */
+// Fungsi wrapText dengan aturan anti-orphan ("dari" dikeluarkan, "Rp" dimasukkan)
 function wrapText(text, maxWidth, fontSpec) {
   if (fontSpec) ctx.font = fontSpec;
   const paragraphs = text.split(/\r?\n/);
   const lines = [];
+  
+  // Daftar kata pendek yang tidak boleh di ujung baris ("dari" dihapus, "Rp" ditambahkan)
+  const shortWordsRegex = /^(di|ke|pada|dalam|untuk|dan|atau|yang|sebagai|oleh|tentang|bagi|kepada|akan|dengan|antara|adalah|Rp)$/i;
+
   for (const para of paragraphs) {
     const trimmed = para.trim();
     if (!trimmed) { lines.push(''); continue; }
+    
     const words = trimmed.split(/\s+/);
     let line = words[0];
+    
     for (let i = 1; i < words.length; i++) {
       const testLine = line + ' ' + words[i];
       if (ctx.measureText(testLine).width > maxWidth) {
-        lines.push(line);
-        line = words[i];
-      } else { line = testLine; }
+        const lineWords = line.split(/\s+/);
+        const lastWord = lineWords[lineWords.length - 1];
+        
+        if (shortWordsRegex.test(lastWord) && lineWords.length > 1) {
+          lineWords.pop(); 
+          lines.push(lineWords.join(' '));
+          line = lastWord + ' ' + words[i];
+        } else {
+          lines.push(line);
+          line = words[i];
+        }
+      } else {
+        line = testLine;
+      }
     }
     lines.push(line);
   }
@@ -305,7 +323,7 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   const spacingUpperToTitle = 64;  
-  const spacingTitleToSub = 8;     // Jarak antara Judul Utama dan Subjudul dibuat sangat rapat (mepet)
+  const spacingTitleToSub = 8;     
 
   const titleLineHeight = 110; 
 
@@ -340,7 +358,6 @@ function rebuildTitleTexture() {
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
       
-      // Jika ini baris terakhir judul, kurangi jarak tambahan sebelum subjudul agar mepet
       if (i === titleLayout.titleLines.length - 1) {
         y += titleLineHeight - 35; 
       } else {
