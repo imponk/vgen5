@@ -220,13 +220,13 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Ukuran Font disesuaikan: UPPER -> 48px, SUBTITLE -> 42px
+// Ukuran Font
 const FONT_UPPER = "400 48px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 42px 'LeagueGothic', sans-serif";
 const FONT_BODY = "400 50px 'Oswald', sans-serif";
 
-// Durasi statis judul 3 detik, fade out 1 detik (tanpa efek wipe/swap)
+// Durasi statis judul 3 detik, fade out 1 detik
 const TITLE_STATIC_DURATION = 3.0;
 const TITLE_FADE_OUT = 1.0;
 
@@ -304,9 +304,9 @@ function rebuildTitleTexture() {
   
   const centerX = LOGICAL_WIDTH / 2;
 
-  // Jarak / Spasi antar elemen disesuaikan secara proporsional
-  const spacingUpperToTitle = 28;  // Jarak seimbang antara Upper dan Judul Utama
-  const spacingTitleToSub = 32;    // Jarak seimbang antara Judul Utama dan Subjudul
+  // Jarak / Spasi antar elemen judul disesuaikan agar lebih turun & proporsional
+  const spacingUpperToTitle = 42;  // Jarak dari Upper ke Judul Utama (ditambah sedikit agar tidak mepet)
+  const spacingTitleToSub = 38;    // Jarak dari Judul Utama ke Subjudul
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 48 + spacingUpperToTitle;
@@ -325,7 +325,7 @@ function rebuildTitleTexture() {
       titleCtx.fillText(line, centerX, y); 
       y += 48; 
     }
-    y += spacingUpperToTitle; // Jarak seimbang terdistribusi rapi ke bawah
+    y += spacingUpperToTitle; // Jarak turun ke judul utama
   }
   
   if (titleLayout.titleLines.length > 0) {
@@ -342,7 +342,7 @@ function rebuildTitleTexture() {
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y += spacingTitleToSub - 15; // Jarak seimbang antara judul dan subjudul
+    y += spacingTitleToSub - 15; // Jarak turun ke subjudul
     titleCtx.font = FONT_SUBTITLE;
     for (const line of titleLayout.subtitleLines) { 
       titleCtx.fillText(line, centerX, y); 
@@ -575,9 +575,7 @@ function startRender(format) {
   setTimeout(() => { if (recording) mediaRecorder.stop(); }, targetDuration * 1000);
 }
 
-renderBtn.name = "renderBtn";
 renderBtn.addEventListener("click", () => startRender('webm'));
-renderMp4Btn.name = "renderMp4Btn";
 renderMp4Btn.addEventListener("click", () => startRender('mp4'));
 
 /* ============================================================ */
