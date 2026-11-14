@@ -304,10 +304,14 @@ function rebuildTitleTexture() {
   
   const centerX = LOGICAL_WIDTH / 2;
 
+  // Jarak / Spasi antar elemen disesuaikan secara proporsional
+  const spacingUpperToTitle = 28;  // Jarak seimbang antara Upper dan Judul Utama
+  const spacingTitleToSub = 32;    // Jarak seimbang antara Judul Utama dan Subjudul
+
   let totalHeight = 0;
-  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 48 + 15;
-  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 85;      
-  if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 40;
+  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 48 + spacingUpperToTitle;
+  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 95;
+  if (titleLayout.subtitleLines.length > 0) totalHeight += spacingTitleToSub + (titleLayout.subtitleLines.length * 42);
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
@@ -317,8 +321,11 @@ function rebuildTitleTexture() {
 
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 48; }
-    y += 15; // Jarak rapat antara upper dan judul
+    for (const line of titleLayout.upperLines) { 
+      titleCtx.fillText(line, centerX, y); 
+      y += 48; 
+    }
+    y += spacingUpperToTitle; // Jarak seimbang terdistribusi rapi ke bawah
   }
   
   if (titleLayout.titleLines.length > 0) {
@@ -330,14 +337,17 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 85; // Tinggi baris judul
+      y += 95; // Tinggi baris judul utama
     }
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y -= 15; // Jarak didekatkan langsung ke judul tanpa jeda jauh
+    y += spacingTitleToSub - 15; // Jarak seimbang antara judul dan subjudul
     titleCtx.font = FONT_SUBTITLE;
-    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 42; }
+    for (const line of titleLayout.subtitleLines) { 
+      titleCtx.fillText(line, centerX, y); 
+      y += 42; 
+    }
   }
   
   titleTextureReady = true;
@@ -352,7 +362,6 @@ function drawTitleScene(t) {
   const fadeStart = TITLE_STATIC_DURATION;
   const fadeEnd = TITLE_STATIC_DURATION + TITLE_FADE_OUT;
 
-  // Jika masuk masa fade out (antara detik ke-3 sampai ke-4)
   if (t >= fadeStart && t <= fadeEnd) {
     alpha = 1 - ((t - fadeStart) / TITLE_FADE_OUT);
   }
@@ -566,7 +575,9 @@ function startRender(format) {
   setTimeout(() => { if (recording) mediaRecorder.stop(); }, targetDuration * 1000);
 }
 
+renderBtn.name = "renderBtn";
 renderBtn.addEventListener("click", () => startRender('webm'));
+renderMp4Btn.name = "renderMp4Btn";
 renderMp4Btn.addEventListener("click", () => startRender('mp4'));
 
 /* ============================================================ */
@@ -576,4 +587,3 @@ if (document.fonts && document.fonts.ready) {
 </script>
 </body>
 </html>
-```[cite: 1]
