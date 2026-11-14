@@ -304,24 +304,36 @@ function rebuildTitleTexture() {
   
   const centerX = LOGICAL_WIDTH / 2;
 
-  let totalHeight = 0;
-  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 48 + 20; // Disesuaikan agar kalkulasi tinggi lebih rapat
-  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 95;      // Jarak antar baris judul disesuaikan
-  if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 40 + 5;
-
-  let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
-  
   titleCtx.textAlign = 'center'; 
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
 
-  if (titleLayout.upperLines.length > 0) {
+  const hasUpper = titleLayout.upperLines.length > 0;
+  const hasTitle = titleLayout.titleLines.length > 0;
+  const hasSubtitle = titleLayout.subtitleLines.length > 0;
+
+  // Kalkulasi total tinggi blok teks secara dinamis agar aman dan presisi di tengah layar
+  let totalHeight = 0;
+  if (hasUpper) totalHeight += titleLayout.upperLines.length * 48;
+  if (hasUpper && hasTitle) totalHeight += 24; // Jarak aman antara upper dan judul
+  if (hasTitle) totalHeight += titleLayout.titleLines.length * 95;
+  if ((hasUpper || hasTitle) && hasSubtitle) totalHeight += 20; // Jarak wajar antara judul dan subjudul
+  if (hasSubtitle) totalHeight += titleLayout.subtitleLines.length * 42;
+
+  let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 50;
+
+  // Render Upper
+  if (hasUpper) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 48; }
-    y += 20; // Jarak rapat antara upper dan judul (sebelumnya 50)
+    for (const line of titleLayout.upperLines) { 
+      titleCtx.fillText(line, centerX, y); 
+      y += 48; 
+    }
+    y += 24; // Jarak turun ke judul
   }
   
-  if (titleLayout.titleLines.length > 0) {
+  // Render Judul
+  if (hasTitle) {
     titleCtx.font = FONT_TITLE;
     const scale = titleLayout.titleScale || 1;
     for (const line of titleLayout.titleLines) {
@@ -330,14 +342,18 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 95; // Tinggi baris judul
+      y += 95; // Spasi antar baris judul
     }
   }
   
-  if (titleLayout.subtitleLines.length > 0) {
-    y += 5; // Jarak rapat antara judul dan subjudul (direkatkan agar konsisten dengan jarak upper ke judul)
+  // Render Subjudul (diberikan jarak yang proporsional dan tidak terlalu rapat/ renggang)
+  if (hasSubtitle) {
+    y += 15; 
     titleCtx.font = FONT_SUBTITLE;
-    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 42; }
+    for (const line of titleLayout.subtitleLines) { 
+      titleCtx.fillText(line, centerX, y); 
+      y += 42; 
+    }
   }
   
   titleTextureReady = true;
