@@ -305,9 +305,8 @@ function rebuildTitleTexture() {
   const centerX = LOGICAL_WIDTH / 2;
 
   const spacingUpperToTitle = 64;  
-  const spacingTitleToSub = 48;    // Jarak dari Judul ke Subjudul sedikit disesuaikan agar imbang dengan leading judul
+  const spacingTitleToSub = 8;     // Jarak antara Judul Utama dan Subjudul dibuat sangat rapat (mepet)
 
-  // Leading judul (jarak antar baris judul) dinaikkan dari 95px ke 110px agar tidak terlalu mepet atas-bawah
   const titleLineHeight = 110; 
 
   let totalHeight = 0;
@@ -333,18 +332,25 @@ function rebuildTitleTexture() {
   if (titleLayout.titleLines.length > 0) {
     titleCtx.font = FONT_TITLE;
     const scale = titleLayout.titleScale || 1;
-    for (const line of titleLayout.titleLines) {
+    for (let i = 0; i < titleLayout.titleLines.length; i++) {
+      const line = titleLayout.titleLines[i];
       titleCtx.save();
       titleCtx.translate(centerX, y);
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += titleLineHeight; // Menerapkan leading judul yang lebih longgar
+      
+      // Jika ini baris terakhir judul, kurangi jarak tambahan sebelum subjudul agar mepet
+      if (i === titleLayout.titleLines.length - 1) {
+        y += titleLineHeight - 35; 
+      } else {
+        y += titleLineHeight;
+      }
     }
   }
   
   if (titleLayout.subtitleLines.length > 0) {
-    y += spacingTitleToSub - 15; 
+    y += spacingTitleToSub; 
     titleCtx.font = FONT_SUBTITLE;
     for (const line of titleLayout.subtitleLines) { 
       titleCtx.fillText(line, centerX, y); 
